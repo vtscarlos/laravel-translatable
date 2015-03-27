@@ -167,7 +167,7 @@ trait Translatable
         foreach ($attributes as $key => $values) {
             if ($this->isKeyALocale($key)) {
                 foreach ($values as $translationAttribute => $translationValue) {
-                    if ($this->alwaysFillable() or $this->isFillable($translationAttribute)) {
+                    if ($this->isFillable($translationAttribute)) {
                         $this->getTranslationOrNew($key)->$translationAttribute = $translationValue;
                     } elseif ($totallyGuarded) {
                         throw new MassAssignmentException($key);
@@ -326,11 +326,6 @@ trait Translatable
         }
 
         return $attributes;
-    }
-
-    private function alwaysFillable()
-    {
-        return App::make('config')->get('translatable.always_fillable', false);
     }
 
     private function getTranslationsTable()
