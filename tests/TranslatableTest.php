@@ -181,6 +181,7 @@ class TranslatableTest extends TestsBase
 
     /**
      * @test
+     * @expectedException Illuminate\Database\Eloquent\MassAssignmentException
      */
     public function it_skips_mass_assignment_if_attributes_non_fillable()
     {
