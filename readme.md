@@ -122,7 +122,7 @@ class Country extends Eloquent {
     use \Dimsav\Translatable\Translatable;
     
     public $translatedAttributes = array('name');
-    protected $fillable = ['code', 'name'];
+    protected $fillable = ['code'];
 
 }
 
