@@ -2,7 +2,6 @@
 
 use Dimsav\Translatable\Test\Model\Continent;
 use Dimsav\Translatable\Test\Model\Country;
-use Dimsav\Translatable\Test\Model\CountryGuarded;
 use Dimsav\Translatable\Test\Model\CountryStrict;
 use Dimsav\Translatable\Test\Model\CountryTranslation;
 use Dimsav\Translatable\Test\Model\City;
@@ -96,19 +95,6 @@ class TestCoreModelExtension extends TestsBase
 
         $continent = new Continent();
         $this->assertFalse($continent->save());
-    }
-
-    // Filling
-
-    /**
-     * @test
-     * @expectedException Illuminate\Database\Eloquent\MassAssignmentException
-     */
-    public function it_throws_exception_if_filling_a_protected_property()
-    {
-        $country = new CountryGuarded();
-        $this->assertTrue($country->totallyGuarded());
-        $country->fill(['en' => ['name' => 'Italy']]);
     }
 
     // Deleting
