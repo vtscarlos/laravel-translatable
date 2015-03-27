@@ -405,21 +405,6 @@ class TranslatableTest extends TestsBase
     /**
      * @test
      */
-    public function configuration_overrides_fillable()
-    {
-        App::make('config')->set('translatable.always_fillable', true);
-
-        $country = new CountryStrict([
-            'en' => ['name' => 'Not fillable'],
-            'code' => 'te',
-        ]);
-
-        $this->assertSame($country->getTranslation('en')->name, 'Not fillable');
-    }
-
-    /**
-     * @test
-     */
     public function lists_of_translated_fields()
     {
         App::setLocale('de');
