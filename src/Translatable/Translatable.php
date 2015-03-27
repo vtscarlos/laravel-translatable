@@ -116,7 +116,7 @@ trait Translatable
 
     public function setAttribute($key, $value)
     {
-        if (in_array($key, $this->translatedAttributes)) {
+        if ($this->isTranslationAttribute($key)) {
             $this->getTranslationOrNew(App::getLocale())->$key = $value;
         } else {
             parent::setAttribute($key, $value);
@@ -266,7 +266,7 @@ trait Translatable
 
     public function __isset($key)
     {
-        return (in_array($key, $this->translatedAttributes) || parent::__isset($key));
+        return ($this->isTranslationAttribute($key) || parent::__isset($key));
     }
 
     public function scopeTranslatedIn(Builder $query, $locale)
