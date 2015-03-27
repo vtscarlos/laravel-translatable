@@ -2,8 +2,9 @@
 
 ### v. 6
 
-* Removed 'always_fillable' config option.
-* Fillable fields in translation models now defined like other eloquent models.
+ * Removed 'always_fillable' config option.
+ * Fillable fields in translation models now defined like other eloquent models.
+ * Added dockblocks
 
 ### v. 5
 

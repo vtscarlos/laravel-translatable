@@ -4,29 +4,41 @@ use App;
 use Dimsav\Translatable\Exception\LocalesNotDefinedException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Database\Eloquent\Model;
 
 trait Translatable
 {
-    /*
+    /**
      * Alias for getTranslation()
+     *
+     * @param string $locale
+     * @param bool $withFallback
+     *
+     * @return Model|null
      */
     public function translate($locale = null, $withFallback = false)
     {
         return $this->getTranslation($locale, $withFallback);
     }
 
-    /*
+    /**
      * Alias for getTranslation()
+     *
+     * @param string $locale
+     *
+     * @return Model|null
      */
     public function translateOrDefault($locale)
     {
         return $this->getTranslation($locale, true);
     }
 
-    /*
+    /**
      * Alias for getTranslationOrNew()
+     *
+     * @param string $locale
+     *
+     * @return Model|null
      */
     public function translateOrNew($locale)
     {
@@ -59,6 +71,11 @@ trait Translatable
         return $translation;
     }
 
+    /**
+     * @param string $locale
+     *
+     * @return bool
+     */
     public function hasTranslation($locale = null)
     {
         $locale = $locale ?: App::getLocale();
@@ -72,11 +89,17 @@ trait Translatable
         return false;
     }
 
+    /**
+     * @return string
+     */
     public function getTranslationModelName()
     {
         return $this->translationModel ?: $this->getTranslationModelNameDefault();
     }
 
+    /**
+     * @return string
+     */
     public function getTranslationModelNameDefault()
     {
         $config = App::make('config');
@@ -84,11 +107,17 @@ trait Translatable
         return get_class($this).$config->get('translatable.translation_suffix', 'Translation');
     }
 
+    /**
+     * @return string
+     */
     public function getRelationKey()
     {
         return $this->translationForeignKey ?: $this->getForeignKey();
     }
 
+    /**
+     * @return string
+     */
     public function getLocaleKey()
     {
         $config = App::make('config');
@@ -96,11 +125,19 @@ trait Translatable
         return $this->localeKey ?: $config->get('translatable.locale_key', 'locale');
     }
 
+    /**
+     * @return mixed
+     */
     public function translations()
     {
         return $this->hasMany($this->getTranslationModelName(), $this->getRelationKey());
     }
 
+    /**
+     * @param string $key
+     *
+     * @return mixed|null
+     */
     public function getAttribute($key)
     {
         if ($this->isTranslationAttribute($key)) {
@@ -114,6 +151,10 @@ trait Translatable
         return parent::getAttribute($key);
     }
 
+    /**
+     * @param string $key
+     * @param $value
+     */
     public function setAttribute($key, $value)
     {
         if ($this->isTranslationAttribute($key)) {
@@ -123,6 +164,11 @@ trait Translatable
         }
     }
 
+    /**
+     * @param array $options
+     *
+     * @return bool
+     */
     public function save(array $options = [])
     {
         if ($this->exists) {
@@ -151,6 +197,11 @@ trait Translatable
         return false;
     }
 
+    /**
+     * @param string $locale
+     *
+     * @return Model|null
+     */
     protected function getTranslationOrNew($locale)
     {
         if (($translation = $this->getTranslation($locale, false)) === null) {
@@ -160,6 +211,11 @@ trait Translatable
         return $translation;
     }
 
+    /**
+     * @param array $attributes
+     *
+     * @return mixed
+     */
     public function fill(array $attributes)
     {
         foreach ($attributes as $key => $values) {
@@ -176,6 +232,11 @@ trait Translatable
         return parent::fill($attributes);
     }
 
+    /**
+     * @param $key
+     *
+     * @return mixed|null
+     */
     private function getTranslationByLocaleKey($key)
     {
         foreach ($this->translations as $translation) {
@@ -187,6 +248,9 @@ trait Translatable
         return;
     }
 
+    /**
+     * @return string|null
+     */
     private function getFallbackLocale()
     {
         return App::make('config')->get('translatable.fallback_locale');
@@ -204,11 +268,22 @@ trait Translatable
         return App::make('config')->get('translatable.use_fallback');
     }
 
+    /**
+     * @param $key
+     *
+     * @return bool
+     */
     protected function isTranslationAttribute($key)
     {
         return in_array($key, $this->translatedAttributes);
     }
 
+    /**
+     * @param $key
+     *
+     * @return bool
+     * @throws LocalesNotDefinedException
+     */
     protected function isKeyALocale($key)
     {
         $locales = $this->getLocales();
@@ -216,6 +291,10 @@ trait Translatable
         return in_array($key, $locales);
     }
 
+    /**
+     * @return array
+     * @throws LocalesNotDefinedException
+     */
     protected function getLocales()
     {
         $config = App::make('config');
@@ -229,6 +308,9 @@ trait Translatable
         return $locales;
     }
 
+    /**
+     * @return bool
+     */
     protected function saveTranslations()
     {
         $saved = true;
@@ -242,6 +324,11 @@ trait Translatable
         return $saved;
     }
 
+    /**
+     * @param Model $translation
+     *
+     * @return bool
+     */
     protected function isTranslationDirty(Model $translation)
     {
         $dirtyAttributes = $translation->getDirty();
@@ -250,6 +337,11 @@ trait Translatable
         return count($dirtyAttributes) > 0;
     }
 
+    /**
+     * @param $locale
+     *
+     * @return mixed
+     */
     public function getNewTranslation($locale)
     {
         $modelName = $this->getTranslationModelName();
@@ -260,11 +352,22 @@ trait Translatable
         return $translation;
     }
 
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
     public function __isset($key)
     {
         return ($this->isTranslationAttribute($key) || parent::__isset($key));
     }
 
+    /**
+     * @param Builder $query
+     * @param string  $locale
+     *
+     * @return Builder
+     */
     public function scopeTranslatedIn(Builder $query, $locale)
     {
         return $query->whereHas('translations', function (Builder $q) use ($locale) {
@@ -272,6 +375,11 @@ trait Translatable
         });
     }
 
+    /**
+     * @param Builder $query
+     *
+     * @return Builder
+     */
     public function scopeTranslated(Builder $query)
     {
         return $query->has('translations');
@@ -311,6 +419,9 @@ trait Translatable
         }
     }
 
+    /**
+     * @return mixed
+     */
     public function toArray()
     {
         $attributes = parent::toArray();
@@ -324,6 +435,9 @@ trait Translatable
         return $attributes;
     }
 
+    /**
+     * @return string
+     */
     private function getTranslationsTable()
     {
         return App::make($this->getTranslationModelName())->getTable();
