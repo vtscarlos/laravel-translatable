@@ -1,5 +1,5 @@
 {
-    "name": "dimsav/laravel-translatable",
+    "name": "dimsav/laravel-translatable/fork/vtscarlos",
     "description": "A Laravel package for multilingual models",
     "keywords": ["laravel", "translation", "language", "database"],
     "license": "MIT",
